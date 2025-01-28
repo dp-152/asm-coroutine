@@ -8,7 +8,7 @@ void counter(void *arg)
   for (long int i = 0; i < n; i++)
   {
     printf("[%zu]: %ld\n", corout_id(), i);
-    corout_yield();
+    yield;
   }
   printf("[%zu]: done\n", corout_id());
 }
@@ -21,20 +21,20 @@ int main()
   corout_go(&counter, (void *)10);
   while (corout_active() > 1)
   {
-    corout_yield();
+    yield;
   }
 
   corout_go(&counter, (void *)15);
   corout_go(&counter, (void *)12);
   while (corout_active() > 2)
   {
-    corout_yield();
+    yield;
   }
 
   corout_go(&counter, (void *)20);
   while (corout_active())
   {
-    corout_yield();
+    yield;
   }
 
   printf("Done\n");

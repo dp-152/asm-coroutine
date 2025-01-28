@@ -8,3 +8,7 @@ size_t corout_id();
 size_t corout_active();
 
 #endif
+
+#ifndef yield
+#define yield corout_yield();
+#endif
