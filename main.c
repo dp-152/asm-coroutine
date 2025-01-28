@@ -1,25 +1,42 @@
 #include <stdio.h>
 #include "corout.h"
 
-void counter()
+void counter(void *arg)
 {
-  for (int i = 0; i < 10; ++i) 
+  long int n = (long int)arg;
+  printf("[%zu]: started, counting up to %ld\n", corout_id(), n);
+  for (long int i = 0; i < n; i++)
   {
-    printf("At coroutine %d\n", corout_id());
-    printf("Counter: %d\n", i);
+    printf("[%zu]: %ld\n", corout_id(), i);
     corout_yield();
   }
+  printf("[%zu]: done\n", corout_id());
 }
 
-int main() {
-  int max_corout = 9;
+int main()
+{
   corout_init();
-  while (max_corout--) {
-    corout_go(&counter, 0);
-  }
-  while(corout_active()) {
-    printf("At main\n");
+
+  corout_go(&counter, (void *)5);
+  corout_go(&counter, (void *)10);
+  while (corout_active() > 1)
+  {
     corout_yield();
   }
+
+  corout_go(&counter, (void *)15);
+  corout_go(&counter, (void *)12);
+  while (corout_active() > 2)
+  {
+    corout_yield();
+  }
+
+  corout_go(&counter, (void *)20);
+  while (corout_active())
+  {
+    corout_yield();
+  }
+
+  printf("Done\n");
   return 0;
 }
